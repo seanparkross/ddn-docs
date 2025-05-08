@@ -54,6 +54,7 @@ on:
     types: [opened, synchronize, reopened]
     paths:
       - 'docs/reference/connectors/**'
+  workflow_dispatch:
 
 jobs:
   connector-docs-dri-reviewer:
@@ -175,17 +176,17 @@ jobs:
               }
             }
 
-            const assigneesToNotify = Array.from(assignees);
-            if (assigneesToNotify.length > 0) {
-              console.log(`Assigning DRIs: ${assigneesToNotify.join(', ')} to PR #${context.issue.number}`);
-              const response = await github.rest.issues.addAssignees({
+            const drIndividuals = Array.from(assignees);
+            if (drIndividuals.length > 0) {
+              console.log(`Requesting review from DRIs: ${drIndividuals.join(', ')} on PR #${context.issue.number}`);
+              const response = await github.rest.pulls.requestReviewers({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: context.issue.number,
-                assignees: assigneesToNotify
+                pull_number: context.issue.number,
+                reviewers: drIndividuals
               });
-              console.log("Assignees Response:", response);
-              console.log("Done assigning DRIs.");
+              console.log("Reviewers Response:", response);
+              console.log("Done requesting reviews from DRIs.");
             } else {
-              console.log("No DRIs found to assign for the changed files.");
+              console.log("No DRIs found to request a review for the changed files.");
             }
