@@ -87,7 +87,7 @@ jobs:
               repo: 'docs-services',
               path: 'docs-server/src/connector-dri-mapping.md',
               headers: {
-                authorization: `token ${{secrets.DOCS_GITHUB_TOKEN}}`
+                Authorization: `Bearer ${{secrets.DOCS_GITHUB_TOKEN}}`
               }
             });
 
