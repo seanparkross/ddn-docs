@@ -178,13 +178,14 @@ jobs:
             const assigneesToNotify = Array.from(assignees);
             if (assigneesToNotify.length > 0) {
               console.log(`Assigning DRIs: ${assigneesToNotify.join(', ')} to PR #${context.issue.number}`);
-              await github.rest.issues.addAssignees({
+              const response = await github.rest.issues.addAssignees({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: context.issue.number,
                 assignees: assigneesToNotify
               });
-              console.log("Successfully assigned DRIs.");
+              console.log("Assignees Response:", response);
+              console.log("Done assigning DRIs.");
             } else {
               console.log("No DRIs found to assign for the changed files.");
             }
