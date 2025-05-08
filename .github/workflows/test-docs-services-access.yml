@@ -1,0 +1,65 @@
+name: Test Access to docs-services Repository
+
+on:
+  workflow_dispatch:
+    # This allows manual triggering from the GitHub Actions page
+
+jobs:
+  test-file-access:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Test access to file with DOCS_GITHUB_TOKEN
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{secrets.DOCS_GITHUB_TOKEN}}
+          script: |
+            try {
+              console.log("Attempting to access file with DOCS_GITHUB_TOKEN...");
+              const response = await github.request('GET /repos/{owner}/{repo}/contents/{path}', {
+                owner: 'hasura',
+                repo: 'docs-services',
+                path: 'docs-server/src/connector-dri-mapping.md'
+              });
+              
+              console.log("✅ SUCCESS: File accessed successfully!");
+              console.log(`File name: ${response.data.name}`);
+              console.log(`File size: ${response.data.size} bytes`);
+              console.log(`File sha: ${response.data.sha}`);
+              
+              // Decode a small portion of the content to verify
+              const decodedContent = Buffer.from(response.data.content, 'base64').toString();
+              console.log("First 200 characters of content:");
+              console.log(decodedContent.substring(0, 200));
+              
+            } catch (error) {
+              console.error("❌ ERROR: Could not access file");
+              console.error(`Status: ${error.status}`);
+              console.error(`Message: ${error.message}`);
+              console.error(`Documentation URL: ${error.response?.data?.documentation_url}`);
+              console.error("Full error:", error);
+              
+              // Exit with error code to mark workflow as failed
+              process.exit(1);
+            }
+
+      - name: Check token access scope
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{secrets.DOCS_GITHUB_TOKEN}}
+          script: |
+            try {
+              // This will tell us what permissions the token has
+              const tokenData = await github.request('GET /user');
+              console.log("Token authenticated as user:", tokenData.data.login);
+              
+              // Get rate limit info which includes scopes
+              const rateLimit = await github.request('GET /rate_limit');
+              console.log("Rate limit info:", rateLimit.headers);
+              
+            } catch (error) {
+              console.error("Failed to get token information:", error);
+            }
