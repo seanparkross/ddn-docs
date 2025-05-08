@@ -125,7 +125,7 @@ jobs:
             `;
 
             function parseMarkdownTable(markdown) {
-              const lines = markdown.trim().split("\\n").filter(line => line.trim().startsWith("|"));
+              const lines = markdown.trim().split("\n").filter(line => line.trim().startsWith("|"));
               if (lines.length < 2) {
                 console.warn("Markdown table is too short or invalid.");
                 return [];
