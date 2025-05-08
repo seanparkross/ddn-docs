@@ -6,7 +6,7 @@
 # | ----------------- | --------------------------------------------- | ----------------- | ----------------------- | ----------------- | ---------------- | ----------------- | ----------------------- |
 # | Athena            | hasura/ndc-jdbc                               | athena            | Karthikeyan Chinnakonda | @codingkarthik    | @Karthikeyan     | @karthikeyan      | karthikeyan@hasura.io   |
 # | Azure Cosmos      | hasura/ndc-azure-cosmos-connector             | azure-cosmos      | Karthikeyan Chinnakonda | @codingkarthik    | @Karthikeyan     | @karthikeyan      | karthikeyan@hasura.io   |
-# | BigQuery          | hasura/ndc-bigquery                           | bigquery          | Daniel Harvey           | @seanparkross     | @Daniel Harvey   | @dan.harvey       | dan.harvey@hasura.io    |
+# | BigQuery          | hasura/ndc-bigquery                           | bigquery          | Daniel Harvey           | @danieljharvey    | @Daniel Harvey   | @dan.harvey       | dan.harvey@hasura.io    |
 # | Databricks        | hasura/ndc-databricks                         | databricks        | Karthikeyan Chinnakonda | @codingkarthik    | @Karthikeyan     | @karthikeyan      | karthikeyan@hasura.io   |
 # | BigQuery JDBC     | hasura/ndc-jdbc                               | bigquery-jdbc     | Karthikeyan Chinnakonda | @codingkarthik    | @Karthikeyan     | @karthikeyan      | karthikeyan@hasura.io   |
 # | Cassandra         | hasura/ndc-cassandra                          | cassandra         | Karthikeyan Chinnakonda | @codingkarthik    | @Karthikeyan     | @karthikeyan      | karthikeyan@hasura.io   |
@@ -87,7 +87,7 @@ jobs:
             | ----------------- | --------------------------------------------- | ----------------- | ----------------------- | ----------------- | ---------------- | ----------------- | ----------------------- |
             | Athena            | hasura/ndc-jdbc                               | athena            | Karthikeyan Chinnakonda | @codingkarthik    | @Karthikeyan     | @karthikeyan      | karthikeyan@hasura.io   |
             | Azure Cosmos      | hasura/ndc-azure-cosmos-connector             | azure-cosmos      | Karthikeyan Chinnakonda | @codingkarthik    | @Karthikeyan     | @karthikeyan      | karthikeyan@hasura.io   |
-            | BigQuery          | hasura/ndc-bigquery                           | bigquery          | Daniel Harvey           | @danieljharvey    | @Daniel Harvey   | @dan.harvey       | dan.harvey@hasura.io    |
+            | BigQuery          | hasura/ndc-bigquery                           | bigquery          | Daniel Harvey           | @seanonthenet     | @Daniel Harvey   | @dan.harvey       | dan.harvey@hasura.io    |
             | Databricks        | hasura/ndc-databricks                         | databricks        | Karthikeyan Chinnakonda | @codingkarthik    | @Karthikeyan     | @karthikeyan      | karthikeyan@hasura.io   |
             | BigQuery JDBC     | hasura/ndc-jdbc                               | bigquery-jdbc     | Karthikeyan Chinnakonda | @codingkarthik    | @Karthikeyan     | @karthikeyan      | karthikeyan@hasura.io   |
             | Cassandra         | hasura/ndc-cassandra                          | cassandra         | Karthikeyan Chinnakonda | @codingkarthik    | @Karthikeyan     | @karthikeyan      | karthikeyan@hasura.io   |
