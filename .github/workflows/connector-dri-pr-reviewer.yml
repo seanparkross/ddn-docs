@@ -77,18 +77,14 @@ jobs:
           files: docs/reference/connectors/**
 
       - name: Assign DRI based on changed connector docs
-        if: steps.changed_connector_files.outputs.all_modified_files != ''
         uses: actions/github-script@v7
         with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
+          github-token: ${{secrets.DOCS_GITHUB_TOKEN}}
           script: |
             const response = await github.request('GET /repos/{owner}/{repo}/contents/{path}', {
               owner: 'hasura',
               repo: 'docs-services',
-              path: 'docs-server/src/connector-dri-mapping.md',
-              headers: {
-                Authorization: `Bearer ${{secrets.DOCS_GITHUB_TOKEN}}`
-              }
+              path: 'docs-server/src/connector-dri-mapping.md'
             });
 
             const decodedContent = Buffer.from(response.data.content, 'base64').toString();
