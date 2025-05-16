@@ -48,7 +48,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.changed_connector_files.outputs.all_modified_files != ''
-        working-directory: .github/workflows/scripts
+        working-directory: utilities/connector-dri-pr-reviewer
         run: npm ci
 
       - name: Run DRI reviewer script
