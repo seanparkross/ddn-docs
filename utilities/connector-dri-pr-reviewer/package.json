@@ -1,0 +1,21 @@
+{
+  "name": "connector-dri-reviewer",
+  "version": "1.0.0",
+  "description": "Script to assign connector DRI reviewers",
+  "main": "connector-dri-reviewer.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Hasura",
+  "license": "ISC",
+  "dependencies": {
+    "@actions/core": "^1.10.1",
+    "@actions/github": "^5.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "typescript": "^5.3.3"
+  }
+}
