@@ -142,16 +142,21 @@ jobs:
               console.log(`Looking up DRI for connector ID: ${connectorId}`);
               
               // Fetch DRI information from the API
-              const connectorInfo = await getDRIByProperty('registry-folder', connectorId);
+              const driInfoArray = await getDRIByProperty('registry-folder', connectorId);
               
-              if (connectorInfo && connectorInfo['dri-github-handle'] && connectorInfo['dri-github-handle'].toLowerCase() !== 'null') {
-                let handle = connectorInfo['dri-github-handle'];
-                if (handle.startsWith('@')) {
-                  handle = handle.substring(1);
-                }
-                if (handle) {
-                  assignees.add(handle);
-                  console.log(`Found DRI ${handle} for connector ${connectorId}`);
+              if (driInfoArray && driInfoArray.length > 0) {
+                const connectorInfo = driInfoArray[0]; // Get the first item from the array
+                if (connectorInfo['dri-github-handle'] && connectorInfo['dri-github-handle'].toLowerCase() !== 'null') {
+                  let handle = connectorInfo['dri-github-handle'];
+                  if (handle.startsWith('@')) {
+                    handle = handle.substring(1);
+                  }
+                  if (handle) {
+                    assignees.add(handle);
+                    console.log(`Found DRI ${handle} for connector ${connectorId}`);
+                  }
+                } else {
+                  console.log(`No valid DRI GitHub handle found for connector ID: ${connectorId}`);
                 }
               } else {
                 console.log(`No DRI found for connector ID: ${connectorId}`);
