@@ -8,6 +8,8 @@
 # 3. Queries an external API endpoint to get the DRI information for each connector ID
 # 4. Processes DRI GitHub handles (removing @ prefix if present)
 # 5. Requests reviews from all identified DRIs on the PR
+#
+# Note: The DRI endpoint ALWAYS returns an array, even when there's just one result.
 
 name: Connector Docs DRI Reviewer
 
@@ -82,7 +84,7 @@ jobs:
                 }
                 
                 const data = await response.json();
-                return data.length > 0 ? data[0] : null;
+                return data;  // Return the entire array as the DRI endpoint always returns an array
               } catch (error) {
                 console.error(`Failed to fetch DRI data: ${error.message}`);
                 return null;
@@ -128,7 +130,31 @@ jobs:
                     console.log(`Found connector IDs in ${filePath}: ${connectorIds.join(', ')}`);
                   }
                 } else {
-                  console.log(`No connector IDs found in ${filePath}`);
+                  console.log(`No connector IDs found in frontmatter of ${filePath}, checking for _category_.json`);
+                  // Check if there's a _category_.json file in the same directory
+                  const dirPath = filePath.substring(0, filePath.lastIndexOf('/'));
+                  const categoryFilePath = `${dirPath}/_category_.json`;
+                  
+                  try {
+                    if (fs.existsSync(categoryFilePath)) {
+                      console.log(`Found _category_.json at ${categoryFilePath}`);
+                      const categoryContent = fs.readFileSync(categoryFilePath, 'utf8');
+                      const categoryData = JSON.parse(categoryContent);
+                      
+                      if (categoryData.customProps && categoryData.customProps['connector-ids'] && 
+                          Array.isArray(categoryData.customProps['connector-ids'])) {
+                        const categoryConnectorIds = categoryData.customProps['connector-ids'];
+                        categoryConnectorIds.forEach(id => uniqueConnectorIds.add(id));
+                        console.log(`Found connector IDs in ${categoryFilePath}: ${categoryConnectorIds.join(', ')}`);
+                      } else {
+                        console.log(`No connector IDs found in ${categoryFilePath}`);
+                      }
+                    } else {
+                      console.log(`No _category_.json found in directory ${dirPath}`);
+                    }
+                  } catch (error) {
+                    console.error(`Error processing _category_.json for ${filePath}: ${error.message}`);
+                  }
                 }
               } catch (error) {
                 console.error(`Error reading file ${filePath}: ${error.message}`);
@@ -142,18 +168,20 @@ jobs:
               console.log(`Looking up DRI for connector ID: ${connectorId}`);
               
               // Fetch DRI information from the API
-              const connectorInfo = await getDRIByProperty('registry-folder', connectorId);
+              const driInfoArray = await getDRIByProperty('registry-folder', connectorId);
               
-              if (connectorInfo && connectorInfo['dri-github-handle'] && connectorInfo['dri-github-handle'].toLowerCase() !== 'null') {
-                let handle = connectorInfo['dri-github-handle'];
-                if (handle.startsWith('@')) {
-                  handle = handle.substring(1);
-                }
-                if (handle) {
-                  assignees.add(handle);
-                  console.log(`Found DRI ${handle} for connector ${connectorId}`);
-                }
-              } else {
+              if (driInfoArray && driInfoArray.length > 0) {
+                const connectorInfo = driInfoArray[0]; // Get the first item from the array
+                if (connectorInfo['dri-github-handle'] && connectorInfo['dri-github-handle'].toLowerCase() !== 'null') {
+                  let handle = connectorInfo['dri-github-handle'];
+                  if (handle.startsWith('@')) {
+                    handle = handle.substring(1);
+                  }
+                  if (handle) {
+                    assignees.add(handle);
+                    console.log(`Found DRI ${handle} for connector ${connectorId}`);
+                  }
+                } else {
                 console.log(`No DRI found for connector ID: ${connectorId}`);
               }
             }
@@ -161,14 +189,30 @@ jobs:
             const drIndividuals = Array.from(assignees);
             if (drIndividuals.length > 0) {
               console.log(`Requesting review from DRIs: ${drIndividuals.join(', ')} on PR #${context.issue.number}`);
-              const response = await github.rest.pulls.requestReviewers({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: context.issue.number,
-                reviewers: drIndividuals
-              });
-              console.log("Reviewers Response:", response);
-              console.log("Done requesting reviews from DRIs.");
+              try {
+                const response = await github.rest.pulls.requestReviewers({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: context.issue.number,
+                  reviewers: drIndividuals
+                });
+                console.log("Reviewers Response:", response);
+                console.log("Done requesting reviews from DRIs.");
+              } catch (error) {
+                console.error("Failed to assign reviewers:", error.message);
+                // Add a comment to the PR indicating the issue
+                try {
+                  await github.rest.issues.createComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: context.issue.number,
+                    body: `⚠️ Failed to assign the following DRIs as reviewers: ${drIndividuals.join(', ')}\n\nError: ${error.message}\n\nPlease consider adding them manually.`
+                  });
+                  console.log("Added comment about reviewer assignment failure");
+                } catch (commentError) {
+                  console.error("Failed to add comment about reviewer failure:", commentError.message);
+                }
+              }
             } else {
               console.log("No DRIs found to request a review for the changed files.");
             }
