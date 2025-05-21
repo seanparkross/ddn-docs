@@ -8,6 +8,8 @@
 # 3. Queries an external API endpoint to get the DRI information for each connector ID
 # 4. Processes DRI GitHub handles (removing @ prefix if present)
 # 5. Requests reviews from all identified DRIs on the PR
+#
+# Note: The DRI endpoint ALWAYS returns an array, even when there's just one result.
 
 name: Connector Docs DRI Reviewer
 
@@ -82,7 +84,7 @@ jobs:
                 }
                 
                 const data = await response.json();
-                return data.length > 0 ? data[0] : null;
+                return data;  // Return the entire array as the DRI endpoint always returns an array
               } catch (error) {
                 console.error(`Failed to fetch DRI data: ${error.message}`);
                 return null;
