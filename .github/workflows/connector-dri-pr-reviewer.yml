@@ -182,7 +182,8 @@ jobs:
                     console.log(`Found DRI ${handle} for connector ${connectorId}`);
                   }
                 } else {
-                console.log(`No DRI found for connector ID: ${connectorId}`);
+                  console.log(`No DRI found for connector ID: ${connectorId}`);
+                }
               }
             }
 
